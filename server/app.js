@@ -3,8 +3,12 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import postRouter from "./apps/posts.js";
 import { client } from "./utils/db.js";
+import authRouter from "./apps/auth.js";
+import dotenv from "dotenv"
 
 async function init() {
+  dotenv.config();
+
   const app = express();
   const port = 4000;
 
@@ -21,6 +25,10 @@ async function init() {
   app.get("*", (req, res) => {
     res.status(404).send("Not found");
   });
+
+
+  /////////
+  app.use("/auth", authRouter)
 
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
