@@ -2,6 +2,15 @@ import axios from "axios";
 
 function jwtInterceptor() {
   axios.interceptors.request.use((req) => {
+    const hasToken = Boolean(window.localStorage.getItem("token"))
+
+    if (hasToken){
+      req.headers = {
+        ...req.headers,
+        Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+      };
+    }
+
     // 🐨 Todo: Exercise #6
     //  ให้เขียน Logic ในการแนบ Token เข้าไปใน Header ของ Request
     // เมื่อมีการส่ง Request จาก Client ไปหา Server
@@ -15,6 +24,13 @@ function jwtInterceptor() {
       return req;
     },
     (error) => {
+      if(
+        error.response.status === 401 &&
+        error.response.statusText === "Unauthorized"
+      ){
+        window.localStorage.removeItem("token")
+        window.location.replace("/login")
+      }
       // 🐨 Todo: Exercise #6
       //  ให้เขียน Logic ในการรองรับเมื่อ Server ได้ Response กลับมาเป็น Error
       // โดยการ Redirect ผู้ใช้งานไปที่หน้า Login และลบ Token ออกจาก Local Storage
